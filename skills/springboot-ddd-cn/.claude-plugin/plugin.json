@@ -1,0 +1,17 @@
+{
+  "name": "springboot-ddd-cn",
+  "description": "在 Spring Boot 应用中实践领域驱动设计（DDD）时使用，包括设计聚合、实体、值对象、领域服务，以及将领域逻辑与基础设施分离",
+  "version": "1.0.0",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring-boot",
+    "ddd",
+    "domain-driven-design",
+    "aggregate",
+    "entity",
+    "value-object"
+  ]
+}

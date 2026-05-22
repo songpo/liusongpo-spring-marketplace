@@ -27,10 +27,7 @@ claude plugin marketplace add https://github.com/songpo/liusongpo-springboot-mar
 ### 安装技能
 
 ```bash
-# 安装所有技能
-claude plugin install liusongpo-springboot-skills@liusongpo-springboot-marketplace
-
-# 或者单独安装
+# 单独安装技能
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 ```
