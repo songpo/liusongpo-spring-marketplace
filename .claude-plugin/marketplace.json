@@ -34,6 +34,15 @@
       }
     },
     {
+      "name": "springboot-observability-cn",
+      "description": "Spring Boot 可观测性实践，包括监控、日志、追踪、告警和性能分析",
+      "version": "1.0.0",
+      "source": "./skills/springboot-observability-cn",
+      "author": {
+        "name": "刘松坡"
+      }
+    },
+    {
       "name": "springboot-ddd-cn",
       "description": "在 Spring Boot 应用中实践领域驱动设计（DDD）时使用",
       "version": "1.0.0",

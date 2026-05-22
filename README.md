@@ -45,6 +45,17 @@ Spring AI 集成实践，包括：
 - 函数调用（Function Calling）
 - 图像生成
 
+### springboot-observability-cn
+Spring Boot 可观测性实践，包括：
+- Metrics 指标监控（Actuator + Prometheus + Grafana）
+- 自定义指标和业务监控
+- 日志管理（Logback + ELK Stack）
+- 结构化日志和 MDC
+- 分布式追踪（Micrometer Tracing + Zipkin）
+- 健康检查和 Kubernetes 探针
+- 告警配置（Prometheus + Alertmanager + 钉钉）
+- 性能分析和慢查询监控
+
 ### springboot-ddd-architecture-cn
 从零开始创建完整的 Spring Boot DDD 架构，包括：
 - 完整的项目结构和模块划分
@@ -93,6 +104,7 @@ claude plugin marketplace add https://github.com/songpo/liusongpo-springboot-mar
 claude plugin install springboot-project-planner-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-security-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ai-cn@liusongpo-springboot-marketplace
+claude plugin install springboot-observability-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
@@ -125,6 +137,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 /springboot-project-planner-cn   # 🎯 项目规划（强烈推荐首先使用）
 /springboot-security-cn          # Spring Security 安全
 /springboot-ai-cn                # Spring AI 集成
+/springboot-observability-cn     # 可观测性（监控、日志、追踪）
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
 /springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
