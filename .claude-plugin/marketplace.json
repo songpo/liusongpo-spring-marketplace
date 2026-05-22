@@ -23,6 +23,24 @@
       "author": {
         "name": "刘松坡"
       }
+    },
+    {
+      "name": "springboot-ddd-cqrs-cn",
+      "description": "在 Spring Boot 应用中实践 CQRS（命令查询职责分离）模式",
+      "version": "1.0.0",
+      "source": "./skills/springboot-ddd-cqrs-cn",
+      "author": {
+        "name": "刘松坡"
+      }
+    },
+    {
+      "name": "springboot-ddd-architecture-cn",
+      "description": "从零开始创建完整的 Spring Boot DDD 架构实现",
+      "version": "1.0.0",
+      "source": "./skills/springboot-ddd-architecture-cn",
+      "author": {
+        "name": "刘松坡"
+      }
     }
   ]
 }
