@@ -69,20 +69,8 @@ https://start.spring.io/starter.zip
 ### 3. 下载并解压项目
 
 ```bash
-# 下载项目
-curl -G https://start.spring.io/starter.zip \
-  -d type=maven-project \
-  -d language=java \
-  -d bootVersion=4.0.6 \
-  -d baseDir=demo \
-  -d groupId=com.example \
-  -d artifactId=demo \
-  -d name=demo \
-  -d description="Demo project for Spring Boot" \
-  -d packageName=com.example.demo \
-  -d packaging=jar \
-  -d javaVersion=17 \
-  -d dependencies=web,data-jpa,mysql,lombok,actuator \
+# 下载项目（使用查询参数）
+curl 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.6&baseDir=demo&groupId=com.example&artifactId=demo&name=demo&description=Demo%20project%20for%20Spring%20Boot&packageName=com.example.demo&packaging=jar&javaVersion=17&dependencies=web,data-jpa,mysql,lombok,actuator' \
   -o demo.zip
 
 # 解压项目
@@ -145,19 +133,7 @@ dependencies=web,kafka,data-jpa,mysql,lombok,actuator
 ### 示例 1: 创建标准 Web 应用
 
 ```bash
-curl -G https://start.spring.io/starter.zip \
-  -d type=maven-project \
-  -d language=java \
-  -d bootVersion=4.0.6 \
-  -d baseDir=my-web-app \
-  -d groupId=com.mycompany \
-  -d artifactId=my-web-app \
-  -d name="My Web Application" \
-  -d description="A web application built with Spring Boot" \
-  -d packageName=com.mycompany.webapp \
-  -d packaging=jar \
-  -d javaVersion=17 \
-  -d dependencies=web,thymeleaf,data-jpa,mysql,validation,lombok,devtools,actuator \
+curl 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.6&baseDir=my-web-app&groupId=com.mycompany&artifactId=my-web-app&name=My%20Web%20Application&description=A%20web%20application%20built%20with%20Spring%20Boot&packageName=com.mycompany.webapp&packaging=jar&javaVersion=17&dependencies=web,thymeleaf,data-jpa,mysql,validation,lombok,devtools,actuator' \
   -o my-web-app.zip && \
   unzip my-web-app.zip && \
   rm my-web-app.zip
@@ -166,19 +142,7 @@ curl -G https://start.spring.io/starter.zip \
 ### 示例 2: 创建微服务项目
 
 ```bash
-curl -G https://start.spring.io/starter.zip \
-  -d type=maven-project \
-  -d language=java \
-  -d bootVersion=4.0.6 \
-  -d baseDir=user-service \
-  -d groupId=com.mycompany.microservices \
-  -d artifactId=user-service \
-  -d name="User Service" \
-  -d description="User management microservice" \
-  -d packageName=com.mycompany.microservices.user \
-  -d packaging=jar \
-  -d javaVersion=17 \
-  -d dependencies=web,data-jpa,postgresql,cloud-eureka,cloud-config-client,cloud-feign,cloud-resilience4j,actuator,lombok \
+curl 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.6&baseDir=user-service&groupId=com.mycompany.microservices&artifactId=user-service&name=User%20Service&description=User%20management%20microservice&packageName=com.mycompany.microservices.user&packaging=jar&javaVersion=17&dependencies=web,data-jpa,postgresql,cloud-eureka,cloud-config-client,cloud-feign,cloud-resilience4j,actuator,lombok' \
   -o user-service.zip && \
   unzip user-service.zip && \
   rm user-service.zip
@@ -187,22 +151,19 @@ curl -G https://start.spring.io/starter.zip \
 ### 示例 3: 创建响应式应用
 
 ```bash
-curl -G https://start.spring.io/starter.zip \
-  -d type=maven-project \
-  -d language=java \
-  -d bootVersion=4.0.6 \
-  -d baseDir=reactive-app \
-  -d groupId=com.mycompany \
-  -d artifactId=reactive-app \
-  -d name="Reactive Application" \
-  -d description="Reactive application with WebFlux" \
-  -d packageName=com.mycompany.reactive \
-  -d packaging=jar \
-  -d javaVersion=17 \
-  -d dependencies=webflux,data-r2dbc,postgresql,data-redis-reactive,lombok,actuator \
+curl 'https://start.spring.io/starter.zip?type=maven-project&language=java&bootVersion=4.0.6&baseDir=reactive-app&groupId=com.mycompany&artifactId=reactive-app&name=Reactive%20Application&description=Reactive%20application%20with%20WebFlux&packageName=com.mycompany.reactive&packaging=jar&javaVersion=17&dependencies=webflux,data-r2dbc,postgresql,data-redis-reactive,lombok,actuator' \
   -o reactive-app.zip && \
   unzip reactive-app.zip && \
   rm reactive-app.zip
+```
+
+### 示例 4: 创建 Kotlin + Gradle 项目
+
+```bash
+curl 'https://start.spring.io/starter.zip?type=gradle-project-kotlin&language=kotlin&bootVersion=4.0.6&baseDir=kotlin-app&groupId=com.example&artifactId=kotlin-app&name=Kotlin%20Application&description=Spring%20Boot%20application%20with%20Kotlin&packageName=com.example.kotlin&packaging=jar&javaVersion=21&configurationFileFormat=yaml&dependencies=web,data-jpa,postgresql,lombok' \
+  -o kotlin-app.zip && \
+  unzip kotlin-app.zip && \
+  rm kotlin-app.zip
 ```
 
 ## 可用依赖 ID 参考
@@ -294,20 +255,14 @@ curl https://start.spring.io/metadata/client | jq '.bootVersion.values[] | {id, 
 ### 3. 生成 pom.xml 而不是完整项目
 
 ```bash
-curl -G https://start.spring.io/pom.xml \
-  -d type=maven-build \
-  -d bootVersion=4.0.6 \
-  -d dependencies=web,data-jpa,mysql \
+curl 'https://start.spring.io/pom.xml?type=maven-build&bootVersion=4.0.6&dependencies=web,data-jpa,mysql' \
   -o pom.xml
 ```
 
 ### 4. 生成 build.gradle
 
 ```bash
-curl -G https://start.spring.io/build.gradle \
-  -d type=gradle-build \
-  -d bootVersion=4.0.6 \
-  -d dependencies=web,data-jpa,mysql \
+curl 'https://start.spring.io/build.gradle?type=gradle-build&bootVersion=4.0.6&dependencies=web,data-jpa,mysql' \
   -o build.gradle
 ```
 
@@ -368,9 +323,7 @@ server.port=8080
 **解决方案:**
 ```bash
 # 添加详细输出
-curl -v -G https://start.spring.io/starter.zip \
-  -d type=maven-project \
-  -d dependencies=web \
+curl -v 'https://start.spring.io/starter.zip?type=maven-project&dependencies=web' \
   -o project.zip
 ```
 
