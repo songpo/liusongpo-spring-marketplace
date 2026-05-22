@@ -900,6 +900,451 @@ public class OrderQueryService {
 }
 ```
 
+#### 使用 Spring JDBC 实现仓储（轻量级方案）
+
+如果你不需要 ORM 的复杂功能，可以使用 Spring JDBC（JdbcTemplate）：
+
+**pom.xml 依赖：**
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>order-domain</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-jdbc</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**JdbcTemplate 仓储实现：**
+```java
+// 仓储实现
+package com.example.order.infrastructure.persistence;
+
+@Repository
+public class OrderRepositoryImpl implements OrderRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
+    
+    public OrderRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.namedJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+    }
+    
+    @Override
+    @Transactional
+    public Order save(Order order) {
+        String orderSql = """
+            INSERT INTO orders (id, customer_id, status, total_amount, created_at)
+            VALUES (?, ?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+                status = VALUES(status),
+                total_amount = VALUES(total_amount)
+            """;
+        
+        jdbcTemplate.update(orderSql,
+            order.getId().value(),
+            order.getCustomerId().value(),
+            order.getStatus().name(),
+            order.getTotalAmount().amount(),
+            Timestamp.valueOf(order.getCreatedAt())
+        );
+        
+        // 删除旧的订单项
+        jdbcTemplate.update("DELETE FROM order_items WHERE order_id = ?", 
+            order.getId().value());
+        
+        // 插入订单项
+        String itemSql = """
+            INSERT INTO order_items (id, order_id, product_id, product_name, quantity, price)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """;
+        
+        for (OrderItem item : order.getItems()) {
+            jdbcTemplate.update(itemSql,
+                UUID.randomUUID().toString(),
+                order.getId().value(),
+                item.getProductId().value(),
+                item.getProductName(),
+                item.getQuantity(),
+                item.getPrice().amount()
+            );
+        }
+        
+        return order;
+    }
+    
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        String sql = """
+            SELECT o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+                   oi.id as item_id, oi.product_id, oi.product_name, 
+                   oi.quantity, oi.price
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.id = ?
+            """;
+        
+        try {
+            List<OrderRow> rows = jdbcTemplate.query(sql, 
+                new OrderRowMapper(), 
+                id.value()
+            );
+            
+            if (rows.isEmpty()) {
+                return Optional.empty();
+            }
+            
+            return Optional.of(mapToOrder(rows));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+    
+    @Override
+    public List<Order> findByCustomerId(CustomerId customerId) {
+        String sql = """
+            SELECT o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+                   oi.id as item_id, oi.product_id, oi.product_name, 
+                   oi.quantity, oi.price
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.customer_id = ?
+            ORDER BY o.created_at DESC
+            """;
+        
+        List<OrderRow> rows = jdbcTemplate.query(sql, 
+            new OrderRowMapper(), 
+            customerId.value()
+        );
+        
+        // 按订单 ID 分组
+        Map<String, List<OrderRow>> grouped = rows.stream()
+            .collect(Collectors.groupingBy(OrderRow::orderId));
+        
+        return grouped.values().stream()
+            .map(this::mapToOrder)
+            .toList();
+    }
+    
+    @Override
+    @Transactional
+    public void delete(OrderId id) {
+        jdbcTemplate.update("DELETE FROM order_items WHERE order_id = ?", id.value());
+        jdbcTemplate.update("DELETE FROM orders WHERE id = ?", id.value());
+    }
+    
+    // 辅助方法：将查询结果映射为领域对象
+    private Order mapToOrder(List<OrderRow> rows) {
+        OrderRow first = rows.get(0);
+        
+        List<OrderItem> items = rows.stream()
+            .filter(row -> row.itemId() != null)
+            .map(row -> OrderItem.reconstruct(
+                new ProductId(row.productId()),
+                row.productName(),
+                row.quantity(),
+                new Money(row.price())
+            ))
+            .toList();
+        
+        return Order.reconstruct(
+            new OrderId(first.orderId()),
+            new CustomerId(first.customerId()),
+            items,
+            OrderStatus.valueOf(first.status()),
+            new Money(first.totalAmount()),
+            first.createdAt()
+        );
+    }
+}
+
+// RowMapper 实现
+class OrderRowMapper implements RowMapper<OrderRow> {
+    @Override
+    public OrderRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+        return new OrderRow(
+            rs.getString("id"),
+            rs.getString("customer_id"),
+            rs.getString("status"),
+            rs.getBigDecimal("total_amount"),
+            rs.getTimestamp("created_at").toLocalDateTime(),
+            rs.getString("item_id"),
+            rs.getString("product_id"),
+            rs.getString("product_name"),
+            rs.getObject("quantity", Integer.class),
+            rs.getBigDecimal("price")
+        );
+    }
+}
+
+// 查询结果记录
+record OrderRow(
+    String orderId,
+    String customerId,
+    String status,
+    BigDecimal totalAmount,
+    LocalDateTime createdAt,
+    String itemId,
+    String productId,
+    String productName,
+    Integer quantity,
+    BigDecimal price
+) {}
+```
+
+**使用 NamedParameterJdbcTemplate（推荐）：**
+
+```java
+@Repository
+public class OrderRepositoryImpl implements OrderRepository {
+    private final NamedParameterJdbcTemplate jdbcTemplate;
+    
+    @Override
+    @Transactional
+    public Order save(Order order) {
+        String sql = """
+            INSERT INTO orders (id, customer_id, status, total_amount, created_at)
+            VALUES (:id, :customerId, :status, :totalAmount, :createdAt)
+            ON DUPLICATE KEY UPDATE
+                status = VALUES(status),
+                total_amount = VALUES(total_amount)
+            """;
+        
+        MapSqlParameterSource params = new MapSqlParameterSource()
+            .addValue("id", order.getId().value())
+            .addValue("customerId", order.getCustomerId().value())
+            .addValue("status", order.getStatus().name())
+            .addValue("totalAmount", order.getTotalAmount().amount())
+            .addValue("createdAt", Timestamp.valueOf(order.getCreatedAt()));
+        
+        jdbcTemplate.update(sql, params);
+        
+        // 批量插入订单项
+        saveOrderItems(order);
+        
+        return order;
+    }
+    
+    private void saveOrderItems(Order order) {
+        // 先删除旧的
+        jdbcTemplate.update(
+            "DELETE FROM order_items WHERE order_id = :orderId",
+            Map.of("orderId", order.getId().value())
+        );
+        
+        // 批量插入新的
+        String sql = """
+            INSERT INTO order_items (id, order_id, product_id, product_name, quantity, price)
+            VALUES (:id, :orderId, :productId, :productName, :quantity, :price)
+            """;
+        
+        SqlParameterSource[] batchParams = order.getItems().stream()
+            .map(item -> new MapSqlParameterSource()
+                .addValue("id", UUID.randomUUID().toString())
+                .addValue("orderId", order.getId().value())
+                .addValue("productId", item.getProductId().value())
+                .addValue("productName", item.getProductName())
+                .addValue("quantity", item.getQuantity())
+                .addValue("price", item.getPrice().amount())
+            )
+            .toArray(SqlParameterSource[]::new);
+        
+        jdbcTemplate.batchUpdate(sql, batchParams);
+    }
+    
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        String sql = """
+            SELECT o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+                   oi.id as item_id, oi.product_id, oi.product_name, 
+                   oi.quantity, oi.price
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.id = :id
+            """;
+        
+        try {
+            List<OrderRow> rows = jdbcTemplate.query(sql, 
+                Map.of("id", id.value()),
+                new OrderRowMapper()
+            );
+            
+            if (rows.isEmpty()) {
+                return Optional.empty();
+            }
+            
+            return Optional.of(mapToOrder(rows));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+}
+```
+
+**使用 SimpleJdbcInsert（简化插入）：**
+
+```java
+@Repository
+public class OrderRepositoryImpl implements OrderRepository {
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert orderInsert;
+    private final SimpleJdbcInsert orderItemInsert;
+    
+    public OrderRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+        
+        this.orderInsert = new SimpleJdbcInsert(jdbcTemplate)
+            .withTableName("orders")
+            .usingColumns("id", "customer_id", "status", "total_amount", "created_at");
+        
+        this.orderItemInsert = new SimpleJdbcInsert(jdbcTemplate)
+            .withTableName("order_items")
+            .usingGeneratedKeyColumns("id");
+    }
+    
+    @Override
+    @Transactional
+    public Order save(Order order) {
+        Map<String, Object> orderParams = Map.of(
+            "id", order.getId().value(),
+            "customer_id", order.getCustomerId().value(),
+            "status", order.getStatus().name(),
+            "total_amount", order.getTotalAmount().amount(),
+            "created_at", Timestamp.valueOf(order.getCreatedAt())
+        );
+        
+        orderInsert.execute(orderParams);
+        
+        // 插入订单项
+        for (OrderItem item : order.getItems()) {
+            Map<String, Object> itemParams = Map.of(
+                "order_id", order.getId().value(),
+                "product_id", item.getProductId().value(),
+                "product_name", item.getProductName(),
+                "quantity", item.getQuantity(),
+                "price", item.getPrice().amount()
+            );
+            
+            orderItemInsert.execute(itemParams);
+        }
+        
+        return order;
+    }
+}
+```
+
+**Spring JDBC 配置：**
+
+```java
+@Configuration
+public class JdbcConfig {
+    
+    @Bean
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
+        JdbcTemplate template = new JdbcTemplate(dataSource);
+        template.setQueryTimeout(30);
+        return template;
+    }
+    
+    @Bean
+    public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+        return new NamedParameterJdbcTemplate(jdbcTemplate);
+    }
+    
+    @Bean
+    public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
+        return new TransactionTemplate(transactionManager);
+    }
+}
+```
+
+**持久化方案对比：**
+
+| 特性 | JPA | MyBatis | Spring JDBC |
+|------|-----|---------|-------------|
+| 学习曲线 | 中等 | 中等 | 低 |
+| 代码量 | 少 | 中等 | 多 |
+| SQL 控制 | 低 | 高 | 高 |
+| 性能 | 中等 | 高 | 高 |
+| 复杂查询 | 困难 | 容易 | 容易 |
+| 对象映射 | 自动 | 半自动 | 手动 |
+| 适用场景 | 简单 CRUD | 复杂查询 | 轻量级项目 |
+| 事务管理 | 自动 | 自动 | 自动 |
+| 批量操作 | 支持 | 支持 | 优秀 |
+
+**选择建议：**
+
+1. **JPA**：领域模型复杂，需要对象关系映射
+2. **MyBatis**：需要完全控制 SQL，复杂查询多
+3. **Spring JDBC**：简单项目，不需要 ORM 开销，追求性能
+
+**混合使用策略：**
+
+```java
+// 写操作：使用 JPA（利用对象映射）
+@Service
+@Transactional
+public class OrderCommandService {
+    private final OrderJpaRepository jpaRepository;
+    
+    public OrderId createOrder(CreateOrderCommand command) {
+        Order order = Order.create(command);
+        jpaRepository.save(order);
+        return order.getId();
+    }
+}
+
+// 简单查询：使用 JPA
+@Service
+@Transactional(readOnly = true)
+public class OrderQueryService {
+    private final OrderJpaRepository jpaRepository;
+    
+    public Order getOrder(OrderId id) {
+        return jpaRepository.findById(id.value())
+            .orElseThrow(() -> new OrderNotFoundException(id));
+    }
+}
+
+// 复杂查询：使用 Spring JDBC
+@Service
+@Transactional(readOnly = true)
+public class OrderReportService {
+    private final JdbcTemplate jdbcTemplate;
+    
+    public List<OrderStatistics> getOrderStatistics(LocalDate from, LocalDate to) {
+        String sql = """
+            SELECT 
+                DATE(o.created_at) as order_date,
+                COUNT(*) as order_count,
+                SUM(o.total_amount) as total_revenue,
+                AVG(o.total_amount) as avg_order_value
+            FROM orders o
+            WHERE o.created_at BETWEEN ? AND ?
+            GROUP BY DATE(o.created_at)
+            ORDER BY order_date
+            """;
+        
+        return jdbcTemplate.query(sql, 
+            (rs, rowNum) -> new OrderStatistics(
+                rs.getDate("order_date").toLocalDate(),
+                rs.getInt("order_count"),
+                rs.getBigDecimal("total_revenue"),
+                rs.getBigDecimal("avg_order_value")
+            ),
+            from, to
+        );
+    }
+}
+```
+
 ### 4. 接口层（Interfaces Layer）
 
 **职责：** 暴露应用功能
