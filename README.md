@@ -11,6 +11,13 @@
 - Maven 多模块配置
 - 完整的电商订单系统实战案例
 
+### springboot-modulith-cn
+使用 Spring Modulith 构建模块化单体应用，包括：
+- 模块划分和边界定义
+- 事件驱动的模块间通信
+- 架构验证和文档生成
+- 与 DDD 结合的最佳实践
+
 ### springboot-ddd-cn
 在 Spring Boot 应用中实践领域驱动设计（DDD）时使用，包括：
 - 设计聚合、实体、值对象
@@ -43,6 +50,7 @@ claude plugin marketplace add https://github.com/songpo/liusongpo-springboot-mar
 ```bash
 # 单独安装技能
 claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
+claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cqrs-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
@@ -54,6 +62,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 ```
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
+/springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
 /springboot-ddd-cqrs-cn          # CQRS 模式
 /springboot-testing-cn           # 测试策略
@@ -61,10 +70,38 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 ### 推荐使用顺序
 
-1. **新项目开始**：先使用 `/springboot-ddd-architecture-cn` 了解完整架构
-2. **设计领域模型**：使用 `/springboot-ddd-cn` 设计聚合和实体
-3. **实现 CQRS**：如需读写分离，使用 `/springboot-ddd-cqrs-cn`
+#### 方案 1：DDD 多模块架构（适合大型项目）
+
+1. **架构设计**：使用 `/springboot-ddd-architecture-cn` 了解完整的 DDD 分层架构
+2. **领域建模**：使用 `/springboot-ddd-cn` 设计聚合和实体
+3. **读写分离**：如需要，使用 `/springboot-ddd-cqrs-cn` 实现 CQRS
 4. **编写测试**：使用 `/springboot-testing-cn` 完善测试
+
+#### 方案 2：模块化单体架构（适合中小型项目，推荐）
+
+1. **模块划分**：使用 `/springboot-modulith-cn` 创建模块化单体
+2. **领域建模**：在每个模块内使用 `/springboot-ddd-cn` 设计领域模型
+3. **模块通信**：使用 Modulith 的事件驱动通信
+4. **编写测试**：使用 `/springboot-testing-cn` 和 Modulith 的模块测试
+
+### Modulith + DDD 结合的优势
+
+**Modulith 提供：**
+- 模块边界和依赖管理（物理边界）
+- 事件驱动的模块间通信
+- 架构验证和文档生成
+
+**DDD 提供：**
+- 领域模型设计（逻辑边界）
+- 聚合、实体、值对象
+- 业务逻辑的组织方式
+
+**结合使用：**
+```
+每个 Modulith 模块 = 一个限界上下文（Bounded Context）
+模块内部使用 DDD 战术设计（聚合、实体、值对象）
+模块之间通过领域事件通信
+```
 
 ## 贡献
 

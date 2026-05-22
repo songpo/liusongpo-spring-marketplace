@@ -41,6 +41,15 @@
       "author": {
         "name": "刘松坡"
       }
+    },
+    {
+      "name": "springboot-modulith-cn",
+      "description": "使用 Spring Modulith 构建模块化单体应用",
+      "version": "1.0.0",
+      "source": "./skills/springboot-modulith-cn",
+      "author": {
+        "name": "刘松坡"
+      }
     }
   ]
 }
