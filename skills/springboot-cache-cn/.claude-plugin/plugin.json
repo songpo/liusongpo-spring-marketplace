@@ -1,0 +1,17 @@
+{
+  "name": "springboot-cache-cn",
+  "description": "Spring Boot 缓存实践，包括 Spring Cache、Redis、Caffeine 和缓存策略",
+  "version": "1.0.0",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring-boot",
+    "cache",
+    "redis",
+    "caffeine",
+    "spring-cache",
+    "cache-strategy"
+  ]
+}

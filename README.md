@@ -56,6 +56,17 @@ Spring Boot 可观测性实践，包括：
 - 告警配置（Prometheus + Alertmanager + 钉钉）
 - 性能分析和慢查询监控
 
+### springboot-cache-cn
+Spring Boot 缓存实践，包括：
+- Spring Cache 抽象和注解使用
+- Redis 缓存配置和使用
+- Caffeine 本地缓存
+- 多级缓存（本地 + Redis）
+- 缓存策略（Cache-Aside、Read/Write-Through、Write-Behind）
+- 缓存一致性（延迟双删、分布式锁）
+- 缓存预热和定时更新
+- 缓存监控
+
 ### springboot-ddd-architecture-cn
 从零开始创建完整的 Spring Boot DDD 架构，包括：
 - 完整的项目结构和模块划分
@@ -105,6 +116,7 @@ claude plugin install springboot-project-planner-cn@liusongpo-springboot-marketp
 claude plugin install springboot-security-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ai-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-observability-cn@liusongpo-springboot-marketplace
+claude plugin install springboot-cache-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
@@ -138,6 +150,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 /springboot-security-cn          # Spring Security 安全
 /springboot-ai-cn                # Spring AI 集成
 /springboot-observability-cn     # 可观测性（监控、日志、追踪）
+/springboot-cache-cn             # 缓存（Redis、Caffeine）
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
 /springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
