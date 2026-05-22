@@ -546,15 +546,15 @@ class OrderMapper {
 **MyBatis 仓储实现：**
 ```java
 // 仓储实现
-package com.example.order.infrastructure.persistence.mybatis;
+package com.example.order.infrastructure.persistence;
 
 @Repository
-public class OrderMyBatisRepositoryImpl implements OrderRepository {
+public class OrderRepositoryImpl implements OrderRepository {
     private final OrderMapper orderMapper;
     private final OrderItemMapper orderItemMapper;
     private final OrderDomainMapper domainMapper;
     
-    public OrderMyBatisRepositoryImpl(
+    public OrderRepositoryImpl(
         OrderMapper orderMapper,
         OrderItemMapper orderItemMapper,
         OrderDomainMapper domainMapper
@@ -623,6 +623,8 @@ public class OrderMyBatisRepositoryImpl implements OrderRepository {
 }
 
 // MyBatis Mapper 接口
+package com.example.order.infrastructure.persistence.mapper;
+
 @Mapper
 public interface OrderMapper {
     @Insert("""
@@ -666,6 +668,8 @@ public interface OrderMapper {
     @Delete("DELETE FROM orders WHERE id = #{id}")
     void deleteById(String id);
 }
+
+package com.example.order.infrastructure.persistence.mapper;
 
 @Mapper
 public interface OrderItemMapper {
@@ -777,15 +781,15 @@ public class OrderDomainMapper {
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.order.infrastructure.persistence.mybatis.OrderMapper">
+<mapper namespace="com.example.order.infrastructure.persistence.mapper.OrderMapper">
     
-    <resultMap id="OrderResultMap" type="com.example.order.infrastructure.persistence.mybatis.OrderPO">
+    <resultMap id="OrderResultMap" type="com.example.order.infrastructure.persistence.OrderPO">
         <id property="id" column="id"/>
         <result property="customerId" column="customer_id"/>
         <result property="status" column="status"/>
         <result property="totalAmount" column="total_amount"/>
         <result property="createdAt" column="created_at"/>
-        <collection property="items" ofType="com.example.order.infrastructure.persistence.mybatis.OrderItemPO">
+        <collection property="items" ofType="com.example.order.infrastructure.persistence.OrderItemPO">
             <id property="id" column="item_id"/>
             <result property="orderId" column="order_id"/>
             <result property="productId" column="product_id"/>
@@ -825,7 +829,7 @@ public class OrderDomainMapper {
 // application.yml
 mybatis:
   mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.example.order.infrastructure.persistence.mybatis
+  type-aliases-package: com.example.order.infrastructure.persistence
   configuration:
     map-underscore-to-camel-case: true
     default-fetch-size: 100
@@ -833,7 +837,7 @@ mybatis:
 
 // 或者 Java 配置
 @Configuration
-@MapperScan("com.example.order.infrastructure.persistence.mybatis")
+@MapperScan("com.example.order.infrastructure.persistence.mapper")
 public class MyBatisConfig {
     
     @Bean
@@ -888,7 +892,7 @@ public class OrderCommandService {
 @Service
 @Transactional(readOnly = true)
 public class OrderQueryService {
-    private final OrderMapper mybatisMapper; // 读操作用 MyBatis
+    private final OrderMapper mapper; // 读操作用 MyBatis
     
     public List<OrderDto> searchOrders(OrderSearchCriteria criteria) {
         // 使用 MyBatis 复杂查询
