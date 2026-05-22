@@ -1,0 +1,19 @@
+{
+  "name": "springboot-ai-cn",
+  "description": "Spring AI 集成实践，包括 LLM 对接、RAG、向量数据库、Prompt 工程和 AI 应用开发",
+  "version": "1.0.0",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring-boot",
+    "spring-ai",
+    "llm",
+    "openai",
+    "rag",
+    "vector-database",
+    "prompt-engineering",
+    "ai"
+  ]
+}

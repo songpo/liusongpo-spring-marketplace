@@ -25,6 +25,15 @@
       }
     },
     {
+      "name": "springboot-ai-cn",
+      "description": "Spring AI 集成实践，包括 LLM 对接、RAG、向量数据库、Prompt 工程和 AI 应用开发",
+      "version": "1.0.0",
+      "source": "./skills/springboot-ai-cn",
+      "author": {
+        "name": "刘松坡"
+      }
+    },
+    {
       "name": "springboot-ddd-cn",
       "description": "在 Spring Boot 应用中实践领域驱动设计（DDD）时使用",
       "version": "1.0.0",

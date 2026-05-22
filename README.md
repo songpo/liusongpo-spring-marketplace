@@ -35,6 +35,16 @@ Spring Security 安全框架实践，包括：
 - 方法级权限控制
 - 安全最佳实践（密码策略、防暴力破解、审计日志）
 
+### springboot-ai-cn
+Spring AI 集成实践，包括：
+- 对接各种 LLM（OpenAI、Azure OpenAI、Ollama）
+- 实现智能对话和流式对话
+- RAG（检索增强生成）实现
+- 向量数据库集成（Chroma、Pinecone）
+- Prompt 工程和模板
+- 函数调用（Function Calling）
+- 图像生成
+
 ### springboot-ddd-architecture-cn
 从零开始创建完整的 Spring Boot DDD 架构，包括：
 - 完整的项目结构和模块划分
@@ -82,6 +92,7 @@ claude plugin marketplace add https://github.com/songpo/liusongpo-springboot-mar
 # 单独安装技能
 claude plugin install springboot-project-planner-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-security-cn@liusongpo-springboot-marketplace
+claude plugin install springboot-ai-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
@@ -113,6 +124,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 ```
 /springboot-project-planner-cn   # 🎯 项目规划（强烈推荐首先使用）
 /springboot-security-cn          # Spring Security 安全
+/springboot-ai-cn                # Spring AI 集成
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
 /springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
