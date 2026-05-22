@@ -7,6 +7,15 @@
   },
   "plugins": [
     {
+      "name": "springboot-project-planner-cn",
+      "description": "Spring Boot 项目规划助手，全面沟通需求并生成架构设计和实施计划",
+      "version": "1.0.0",
+      "source": "./skills/springboot-project-planner-cn",
+      "author": {
+        "name": "刘松坡"
+      }
+    },
+    {
       "name": "springboot-ddd-cn",
       "description": "在 Spring Boot 应用中实践领域驱动设计（DDD）时使用",
       "version": "1.0.0",
