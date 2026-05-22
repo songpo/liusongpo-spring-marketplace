@@ -1,0 +1,24 @@
+{
+  "name": "springboot-testing-cn",
+  "description": "Spring Boot 应用测试策略与实践",
+  "version": "1.0.0",
+  "author": {
+    "name": "刘松坡"
+  },
+  "repository": "https://github.com/songpo/liusongpo-springboot-marketplace",
+  "license": "MIT",
+  "keywords": [
+    "spring-boot",
+    "testing",
+    "unit-test",
+    "integration-test",
+    "java"
+  ],
+  "skills": [
+    {
+      "name": "springboot-testing-cn",
+      "path": "SKILL.md",
+      "description": "为 Spring Boot 应用设计测试策略、编写单元测试、集成测试，或在控制器、服务和仓储的测试方法之间做选择时使用"
+    }
+  ]
+}

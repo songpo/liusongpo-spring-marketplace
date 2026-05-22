@@ -1,0 +1,19 @@
+{
+  "name": "liusongpo-springboot-skills",
+  "description": "Spring Boot skills marketplace - comprehensive skills for Spring Boot development",
+  "version": "1.0.0",
+  "author": {
+    "name": "刘松坡"
+  },
+  "homepage": "https://github.com/songpo/liusongpo-springboot-marketplace",
+  "repository": "https://github.com/songpo/liusongpo-springboot-marketplace",
+  "license": "MIT",
+  "keywords": [
+    "spring-boot",
+    "java",
+    "ddd",
+    "testing",
+    "skills",
+    "best-practices"
+  ]
+}
