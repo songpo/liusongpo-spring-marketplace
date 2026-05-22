@@ -1,0 +1,16 @@
+{
+  "name": "spring-architecture-cn",
+  "version": "1.0.0",
+  "description": "Spring 应用架构设计实践，包括 DDD、CQRS、模块化单体和分层架构",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "architecture",
+    "ddd",
+    "cqrs",
+    "modulith",
+    "layered-architecture"
+  ]
+}

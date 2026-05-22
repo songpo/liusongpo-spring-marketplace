@@ -1,10 +1,10 @@
-# 刘松坡的 Spring Boot Skills Marketplace
+# 刘松坡的 Spring Skills Marketplace
 
-这是一个专注于 Spring Boot 开发的技能市场，包含了 Spring Boot 开发中常用的最佳实践和模式。
+这是一个专注于 Spring 生态系统开发的技能市场，包含了 Spring Boot、Spring Cloud、Spring Batch、Spring Integration 等开发中常用的最佳实践和模式。
 
 ## ⚠️ 重要提示
 
-**在开始使用其他技能之前，强烈建议先使用 `/springboot-project-planner-cn` 进行项目规划。**
+**在开始使用其他技能之前，强烈建议先使用 `/spring-project-planner-cn` 进行项目规划。**
 
 很多项目失败不是因为技术问题，而是因为需求不清晰、架构选择不当、技术选型失误。
 
@@ -12,7 +12,18 @@
 
 ## 包含的技能
 
-### 🎯 springboot-project-planner-cn（强烈推荐首先使用）
+### 🚀 项目初始化
+
+#### spring-initializr-cn
+使用 Spring Initializr API 快速生成项目脚手架，包括：
+- 自动调用 start.spring.io API 生成项目
+- 根据需求选择依赖和配置
+- 生成标准的项目结构
+- 支持 Maven/Gradle、多种 Java 版本
+
+### 📋 项目规划
+
+#### 🎯 spring-project-planner-cn（强烈推荐首先使用）
 
 **为什么要先规划？**
 - ❌ 需求不清晰 → 做到一半发现方向错了
@@ -26,7 +37,39 @@
 - 自动生成架构设计文档和实施计划
 - 指导你使用其他技能完成实施
 
-### springboot-security-cn
+### 🏗️ Spring 核心框架
+
+#### spring-framework-cn
+Spring Framework 核心框架实践，包括：
+- IoC 容器和依赖注入
+- 面向切面编程（AOP）
+- 事件机制
+- 资源管理
+- 数据绑定和验证
+- 任务调度和异步执行
+
+#### spring-boot-cn
+Spring Boot 核心开发实践，包括：
+- 自动配置原理和机制
+- 开发自定义 Starter
+- 配置管理（application.yml/properties）
+- Profile 环境配置
+- Actuator 监控端点
+- 应用打包和部署
+- Docker 容器化
+- 性能优化
+
+#### spring-data-cn
+Spring Data 数据访问实践，包括：
+- Spring Data JPA（对象关系映射）
+- Spring Data JDBC（轻量级数据访问）
+- Spring Data Redis（缓存和数据存储）
+- Spring Data MongoDB（文档数据库）
+- 查询方法和分页
+- Specification 动态查询
+- 审计和版本控制
+
+#### spring-security-cn
 Spring Security 安全框架实践，包括：
 - 用户认证和授权
 - JWT 令牌认证实现
@@ -35,7 +78,7 @@ Spring Security 安全框架实践，包括：
 - 方法级权限控制
 - 安全最佳实践（密码策略、防暴力破解、审计日志）
 
-### springboot-ai-cn
+#### spring-ai-cn
 Spring AI 集成实践，包括：
 - 对接各种 LLM（OpenAI、Azure OpenAI、Ollama）
 - 实现智能对话和流式对话
@@ -45,96 +88,94 @@ Spring AI 集成实践，包括：
 - 函数调用（Function Calling）
 - 图像生成
 
-### springboot-observability-cn
-Spring Boot 可观测性实践，包括：
-- Metrics 指标监控（Actuator + Prometheus + Grafana）
-- 自定义指标和业务监控
-- 日志管理（Logback + ELK Stack）
-- 结构化日志和 MDC
-- 分布式追踪（Micrometer Tracing + Zipkin）
-- 健康检查和 Kubernetes 探针
-- 告警配置（Prometheus + Alertmanager + 钉钉）
-- 性能分析和慢查询监控
+### 🎨 架构设计
 
-### springboot-cache-cn
-Spring Boot 缓存实践，包括：
-- Spring Cache 抽象和注解使用
-- Redis 缓存配置和使用
-- Caffeine 本地缓存
-- 多级缓存（本地 + Redis）
-- 缓存策略（Cache-Aside、Read/Write-Through、Write-Behind）
-- 缓存一致性（延迟双删、分布式锁）
-- 缓存预热和定时更新
-- 缓存监控
+#### spring-architecture-cn
+Spring 应用架构设计实践，包括：
+- 领域驱动设计（DDD）：实体、值对象、聚合、领域服务、仓储
+- CQRS 模式：命令查询职责分离、读写模型分离、事件驱动同步
+- 模块化单体架构：Spring Modulith、模块边界、事件驱动通信
+- 分层架构：接口层、应用层、领域层、基础设施层
+- 架构模式选择和最佳实践
 
-### springboot-messaging-cn
-Spring Boot 消息队列实践，包括：
-- RabbitMQ 完整实践（队列、交换机、绑定）
-- 死信队列和延迟队列
-- Kafka 生产者和消费者
-- Spring Cloud Stream 统一抽象
-- 消息可靠性保证（生产者确认、消费者确认）
-- 消息幂等性和去重
-- 消息重试机制
-- 消息顺序性保证
-- 监控和告警
+### ☁️ Spring Cloud 微服务
 
-### springboot-ddd-architecture-cn
-从零开始创建完整的 Spring Boot DDD 架构，包括：
-- 完整的项目结构和模块划分
-- 分层架构详解（领域层、应用层、基础设施层、接口层）
-- 4 种持久化方案（JPA、Spring Data JDBC、MyBatis、Spring JDBC）
-- 完整的电商订单系统实战案例
+#### spring-cloud-cn
+Spring Cloud 微服务架构总览，包括：
+- 微服务架构概念和原则
+- Spring Cloud 生态系统（Gateway、Eureka、Config、OpenFeign、CircuitBreaker）
+- 微服务架构模式
+- 服务拆分和设计
+- 数据管理和一致性
+- 部署和运维
 
-### springboot-modulith-cn
-使用 Spring Modulith 构建模块化单体应用，包括：
-- 模块划分和边界定义
-- 事件驱动的模块间通信
-- 架构验证和文档生成
-- 与 DDD 结合的最佳实践
+### 🔄 企业集成
 
-### springboot-ddd-cn
-在 Spring Boot 应用中实践领域驱动设计（DDD）时使用，包括：
-- 设计聚合、实体、值对象
-- 领域服务的实现
-- 将领域逻辑与基础设施分离
+#### spring-integration-cn
+Spring Integration 企业集成模式实践，包括：
+- 消息通道和端点
+- 消息转换和路由
+- 消息聚合和分割
+- 文件处理和监控
+- 与外部系统集成（FTP/SFTP/HTTP/JMS）
+- 事件驱动架构
 
-### springboot-ddd-cqrs-cn
-在 Spring Boot 应用中实践 CQRS（命令查询职责分离）模式，包括：
-- 命令和查询的分离
-- 读写模型分离
-- 事件驱动同步
-- 最终一致性处理
-
-### springboot-testing-cn
-为 Spring Boot 应用设计测试策略，包括：
-- 单元测试编写
-- 集成测试实践
-- 控制器、服务和仓储的测试方法
+#### spring-batch-cn
+Spring Batch 批处理实践，包括：
+- Job 和 Step 配置
+- ItemReader/Writer/Processor
+- 分块处理
+- 任务调度
+- 大批量数据处理
+- ETL 流程
+- 数据迁移和同步
 
 ## 安装
 
 ### 添加 marketplace
 
 ```bash
-claude plugin marketplace add https://github.com/songpo/liusongpo-springboot-marketplace
+# 从 GitHub 安装（推荐）
+claude plugin marketplace add https://github.com/songpo/liusongpo-spring-marketplace
+
+# 或从本地路径安装（开发测试）
+claude plugin marketplace add /path/to/liusongpo-spring-marketplace
 ```
 
 ### 安装技能
 
+**方式 1：一键安装所有技能（推荐）**
+
 ```bash
-# 单独安装技能
-claude plugin install springboot-project-planner-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-security-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-ai-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-observability-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-cache-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-messaging-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-ddd-cqrs-cn@liusongpo-springboot-marketplace
-claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
+# 安装元插件，自动安装所有 Spring 技能
+claude plugin install sp-skills@liusongpo-spring-marketplace
+```
+
+**方式 2：按需安装单个技能**
+
+```bash
+# 项目初始化
+claude plugin install spring-initializr-cn@liusongpo-spring-marketplace
+
+# 项目规划
+claude plugin install spring-project-planner-cn@liusongpo-spring-marketplace
+
+# Spring 核心框架
+claude plugin install spring-framework-cn@liusongpo-spring-marketplace
+claude plugin install spring-boot-cn@liusongpo-spring-marketplace
+claude plugin install spring-data-cn@liusongpo-spring-marketplace
+claude plugin install spring-security-cn@liusongpo-spring-marketplace
+claude plugin install spring-ai-cn@liusongpo-spring-marketplace
+
+# 架构设计
+claude plugin install spring-architecture-cn@liusongpo-spring-marketplace
+
+# Spring Cloud 微服务
+claude plugin install spring-cloud-cn@liusongpo-spring-marketplace
+
+# 企业集成
+claude plugin install spring-integration-cn@liusongpo-spring-marketplace
+claude plugin install spring-batch-cn@liusongpo-spring-marketplace
 ```
 
 ## 使用
@@ -143,15 +184,15 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 ```bash
 # 第 1 步：先规划（必须！）
-/springboot-project-planner-cn
+/sp-spring:spring-project-planner-cn
 
 # 助手会通过系统化问题了解你的需求，然后推荐合适的技能
 # 例如：推荐使用模块化单体架构
 
 # 第 2 步：根据推荐使用相应技能
-/springboot-modulith-cn          # 创建模块化架构
-/springboot-ddd-cn               # 设计领域模型
-/springboot-testing-cn           # 编写测试
+/sp-spring:spring-modulith-cn          # 创建模块化架构
+/sp-spring:spring-ddd-cn               # 设计领域模型
+/sp-spring:spring-testing-cn           # 编写测试
 ```
 
 ### 📚 所有可用技能
@@ -159,24 +200,24 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 安装后，在 Claude Code 中使用 `/skills` 命令查看可用技能，或直接调用：
 
 ```
-/springboot-project-planner-cn   # 🎯 项目规划（强烈推荐首先使用）
-/springboot-security-cn          # Spring Security 安全
-/springboot-ai-cn                # Spring AI 集成
-/springboot-observability-cn     # 可观测性（监控、日志、追踪）
-/springboot-cache-cn             # 缓存（Redis、Caffeine）
-/springboot-messaging-cn         # 消息队列（RabbitMQ、Kafka）
-/springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
-/springboot-modulith-cn          # 模块化单体架构
-/springboot-ddd-cn               # DDD 核心概念
-/springboot-ddd-cqrs-cn          # CQRS 模式
-/springboot-testing-cn           # 测试策略
+/sp-spring:spring-project-planner-cn       # 🎯 项目规划（强烈推荐首先使用）
+/sp-spring:spring-initializr-cn            # 快速生成项目脚手架
+/sp-spring:spring-framework-cn             # Spring Framework 核心
+/sp-spring:spring-boot-cn                  # Spring Boot 开发
+/sp-spring:spring-data-cn                  # Spring Data 数据访问
+/sp-spring:spring-security-cn              # Spring Security 安全
+/sp-spring:spring-ai-cn                    # Spring AI 集成
+/sp-spring:spring-architecture-cn          # 架构设计（DDD、CQRS、模块化单体）
+/sp-spring:spring-cloud-cn                 # Spring Cloud 微服务架构
+/sp-spring:spring-integration-cn           # 企业集成模式
+/sp-spring:spring-batch-cn                 # 批处理
 ```
 
 ### 完整的项目开发流程
 
 #### 第 1 步：项目规划 ⭐
 
-**使用技能：** `/springboot-project-planner-cn`
+**使用技能：** `/sp-spring:spring-project-planner-cn`
 
 **目标：** 通过系统化沟通，全面了解需求并生成设计文档
 
@@ -191,7 +232,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 **示例：**
 ```
-用户：/springboot-project-planner-cn
+用户：/sp-spring:spring-project-planner-cn
 助手：你好！让我们一起规划你的项目。请描述一下项目的业务目标？
 用户：我想做一个电商平台...
 助手：[开始系统化沟通，涵盖功能、架构、安全、测试、运维等方面]
@@ -203,19 +244,19 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 **方案 A：DDD 多模块架构（大型项目）**
 
-1. 使用 `/springboot-ddd-architecture-cn` 创建分层架构
-2. 使用 `/springboot-ddd-cn` 设计领域模型
-3. 如需读写分离，使用 `/springboot-ddd-cqrs-cn`
+1. 使用 `/sp-spring:spring-architecture-cn` 创建分层架构
+2. 使用 `/sp-spring:spring-architecture-cn` 设计领域模型
+3. 如需读写分离，使用 CQRS 模式
 
 **方案 B：模块化单体架构（中小型项目，推荐）**
 
-1. 使用 `/springboot-modulith-cn` 创建模块化架构
-2. 在每个模块内使用 `/springboot-ddd-cn` 设计领域模型
+1. 使用 `/sp-spring:spring-architecture-cn` 创建模块化架构
+2. 在每个模块内设计领域模型
 3. 使用 Modulith 的事件驱动通信
 
 #### 第 3 步：测试和质量保证
 
-**使用技能：** `/springboot-testing-cn`
+**使用技能：** `/sp-spring:spring-framework-cn` 和 `/sp-spring:spring-boot-cn`
 
 - 编写单元测试
 - 编写集成测试
@@ -223,7 +264,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 #### 第 4 步：进度跟踪
 
-回到 `/springboot-project-planner-cn`，使用检查清单跟踪进度：
+回到 `/sp-spring:spring-project-planner-cn`，使用检查清单跟踪进度：
 - 每日检查清单
 - 迭代回顾
 - 里程碑检查
@@ -231,18 +272,17 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 ### 推荐使用顺序（新项目）
 
 ```
-1. /springboot-project-planner-cn     ← 开始：全面规划
+1. /sp-spring:spring-project-planner-cn         ← 开始：全面规划
    ↓
-2. /springboot-modulith-cn            ← 创建模块化架构
-   或 /springboot-ddd-architecture-cn  （大型项目）
+2. /sp-spring:spring-architecture-cn            ← 创建架构
    ↓
-3. /springboot-ddd-cn                 ← 设计领域模型
+3. /sp-spring:spring-framework-cn               ← Spring 核心功能
    ↓
-4. /springboot-ddd-cqrs-cn            ← 可选：读写分离
+4. /sp-spring:spring-boot-cn                    ← Spring Boot 开发
    ↓
-5. /springboot-testing-cn             ← 编写测试
+5. /sp-spring:spring-data-cn                    ← 数据访问
    ↓
-6. /springboot-project-planner-cn     ← 回到：跟踪进度
+6. /sp-spring:spring-project-planner-cn         ← 回到：跟踪进度
 ```
 
 ### Modulith + DDD 结合的优势

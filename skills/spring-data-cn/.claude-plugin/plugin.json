@@ -1,0 +1,16 @@
+{
+  "name": "spring-data-cn",
+  "version": "1.0.0",
+  "description": "Spring Data 数据访问实践，包括 JPA、JDBC、Redis、MongoDB 和查询方法",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring-data",
+    "jpa",
+    "jdbc",
+    "redis",
+    "mongodb"
+  ]
+}

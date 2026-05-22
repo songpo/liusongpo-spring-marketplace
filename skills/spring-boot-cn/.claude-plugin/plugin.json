@@ -1,0 +1,16 @@
+{
+  "name": "spring-boot-cn",
+  "version": "1.0.0",
+  "description": "Spring Boot 核心开发实践，包括自动配置、Starter、配置管理、Actuator 和部署",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring-boot",
+    "auto-configuration",
+    "starter",
+    "actuator",
+    "deployment"
+  ]
+}

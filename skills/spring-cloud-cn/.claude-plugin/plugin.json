@@ -1,0 +1,16 @@
+{
+  "name": "spring-cloud-cn",
+  "version": "1.0.0",
+  "description": "Spring Cloud 微服务架构实践，包括微服务概念、架构模式和 Spring Cloud 生态系统",
+  "author": {
+    "name": "刘松坡"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring-cloud",
+    "microservices",
+    "gateway",
+    "eureka",
+    "config"
+  ]
+}
