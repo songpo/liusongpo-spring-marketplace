@@ -900,9 +900,416 @@ public class OrderQueryService {
 }
 ```
 
-#### 使用 Spring JDBC 实现仓储（轻量级方案）
+#### 使用 Spring Data JDBC 实现仓储（推荐的轻量级方案）
 
-如果你不需要 ORM 的复杂功能，可以使用 Spring JDBC（JdbcTemplate）：
+Spring Data JDBC 提供类似 JPA 的编程模型，但更简单、更透明，没有延迟加载、脏检查等复杂特性。
+
+**pom.xml 依赖：**
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>order-domain</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jdbc</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**Spring Data JDBC 实体：**
+```java
+// 持久化实体（与领域模型分离）
+package com.example.order.infrastructure.persistence;
+
+import org.springframework.data.annotation.*;
+import org.springframework.data.relational.core.mapping.*;
+
+@Table("orders")
+class OrderEntity {
+    @Id
+    private String id;
+    
+    @Column("customer_id")
+    private String customerId;
+    
+    private String status;
+    
+    @Column("total_amount")
+    private BigDecimal totalAmount;
+    
+    @Column("created_at")
+    private LocalDateTime createdAt;
+    
+    // Spring Data JDBC 使用 Set 管理一对多关系
+    @MappedCollection(idColumn = "order_id")
+    private Set<OrderItemEntity> items = new HashSet<>();
+    
+    // Getter/Setter
+}
+
+@Table("order_items")
+class OrderItemEntity {
+    @Id
+    private Long id; // 自增主键
+    
+    @Column("product_id")
+    private String productId;
+    
+    @Column("product_name")
+    private String productName;
+    
+    private Integer quantity;
+    
+    private BigDecimal price;
+    
+    // Getter/Setter
+}
+```
+
+**Spring Data JDBC 仓储：**
+```java
+// Spring Data JDBC 仓储接口
+package com.example.order.infrastructure.persistence;
+
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jdbc.repository.query.Query;
+
+interface OrderJdbcRepository extends CrudRepository<OrderEntity, String> {
+    
+    @Query("SELECT * FROM orders WHERE customer_id = :customerId ORDER BY created_at DESC")
+    List<OrderEntity> findByCustomerId(String customerId);
+    
+    @Query("""
+        SELECT * FROM orders 
+        WHERE status = :status 
+        AND created_at > :since
+        """)
+    List<OrderEntity> findByStatusAndCreatedAtAfter(String status, LocalDateTime since);
+}
+
+// 仓储实现（领域仓储接口的实现）
+@Repository
+public class OrderRepositoryImpl implements OrderRepository {
+    private final OrderJdbcRepository jdbcRepository;
+    private final OrderMapper mapper;
+    
+    public OrderRepositoryImpl(OrderJdbcRepository jdbcRepository, OrderMapper mapper) {
+        this.jdbcRepository = jdbcRepository;
+        this.mapper = mapper;
+    }
+    
+    @Override
+    public Order save(Order order) {
+        OrderEntity entity = mapper.toEntity(order);
+        OrderEntity saved = jdbcRepository.save(entity);
+        return mapper.toDomain(saved);
+    }
+    
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        return jdbcRepository.findById(id.value())
+            .map(mapper::toDomain);
+    }
+    
+    @Override
+    public List<Order> findByCustomerId(CustomerId customerId) {
+        return jdbcRepository.findByCustomerId(customerId.value()).stream()
+            .map(mapper::toDomain)
+            .toList();
+    }
+    
+    @Override
+    public void delete(OrderId id) {
+        jdbcRepository.deleteById(id.value());
+    }
+}
+
+// 映射器
+@Component
+class OrderMapper {
+    public OrderEntity toEntity(Order order) {
+        OrderEntity entity = new OrderEntity();
+        entity.setId(order.getId().value());
+        entity.setCustomerId(order.getCustomerId().value());
+        entity.setStatus(order.getStatus().name());
+        entity.setTotalAmount(order.getTotalAmount().amount());
+        entity.setCreatedAt(order.getCreatedAt());
+        
+        Set<OrderItemEntity> items = order.getItems().stream()
+            .map(this::toItemEntity)
+            .collect(Collectors.toSet());
+        entity.setItems(items);
+        
+        return entity;
+    }
+    
+    public Order toDomain(OrderEntity entity) {
+        List<OrderItem> items = entity.getItems().stream()
+            .map(this::toItemDomain)
+            .toList();
+        
+        return Order.reconstruct(
+            new OrderId(entity.getId()),
+            new CustomerId(entity.getCustomerId()),
+            items,
+            OrderStatus.valueOf(entity.getStatus()),
+            new Money(entity.getTotalAmount()),
+            entity.getCreatedAt()
+        );
+    }
+    
+    private OrderItemEntity toItemEntity(OrderItem item) {
+        OrderItemEntity entity = new OrderItemEntity();
+        entity.setProductId(item.getProductId().value());
+        entity.setProductName(item.getProductName());
+        entity.setQuantity(item.getQuantity());
+        entity.setPrice(item.getPrice().amount());
+        return entity;
+    }
+    
+    private OrderItem toItemDomain(OrderItemEntity entity) {
+        return OrderItem.reconstruct(
+            new ProductId(entity.getProductId()),
+            entity.getProductName(),
+            entity.getQuantity(),
+            new Money(entity.getPrice())
+        );
+    }
+}
+```
+
+**使用 JdbcClient（Spring 6.1+）：**
+
+```java
+// JdbcClient 是 Spring 6.1 引入的现代化 JDBC API
+@Repository
+public class OrderRepositoryImpl implements OrderRepository {
+    private final JdbcClient jdbcClient;
+    
+    public OrderRepositoryImpl(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
+    
+    @Override
+    @Transactional
+    public Order save(Order order) {
+        String sql = """
+            INSERT INTO orders (id, customer_id, status, total_amount, created_at)
+            VALUES (:id, :customerId, :status, :totalAmount, :createdAt)
+            ON DUPLICATE KEY UPDATE
+                status = VALUES(status),
+                total_amount = VALUES(total_amount)
+            """;
+        
+        jdbcClient.sql(sql)
+            .param("id", order.getId().value())
+            .param("customerId", order.getCustomerId().value())
+            .param("status", order.getStatus().name())
+            .param("totalAmount", order.getTotalAmount().amount())
+            .param("createdAt", order.getCreatedAt())
+            .update();
+        
+        // 保存订单项
+        saveOrderItems(order);
+        
+        return order;
+    }
+    
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        String sql = """
+            SELECT o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+                   oi.id as item_id, oi.product_id, oi.product_name, 
+                   oi.quantity, oi.price
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.id = :id
+            """;
+        
+        List<OrderRow> rows = jdbcClient.sql(sql)
+            .param("id", id.value())
+            .query(OrderRow.class)
+            .list();
+        
+        if (rows.isEmpty()) {
+            return Optional.empty();
+        }
+        
+        return Optional.of(mapToOrder(rows));
+    }
+    
+    @Override
+    public List<Order> findByCustomerId(CustomerId customerId) {
+        String sql = """
+            SELECT o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+                   oi.id as item_id, oi.product_id, oi.product_name, 
+                   oi.quantity, oi.price
+            FROM orders o
+            LEFT JOIN order_items oi ON o.id = oi.order_id
+            WHERE o.customer_id = :customerId
+            ORDER BY o.created_at DESC
+            """;
+        
+        List<OrderRow> rows = jdbcClient.sql(sql)
+            .param("customerId", customerId.value())
+            .query(OrderRow.class)
+            .list();
+        
+        // 按订单 ID 分组
+        Map<String, List<OrderRow>> grouped = rows.stream()
+            .collect(Collectors.groupingBy(OrderRow::orderId));
+        
+        return grouped.values().stream()
+            .map(this::mapToOrder)
+            .toList();
+    }
+    
+    private void saveOrderItems(Order order) {
+        // 删除旧的订单项
+        jdbcClient.sql("DELETE FROM order_items WHERE order_id = :orderId")
+            .param("orderId", order.getId().value())
+            .update();
+        
+        // 插入新的订单项
+        String sql = """
+            INSERT INTO order_items (id, order_id, product_id, product_name, quantity, price)
+            VALUES (:id, :orderId, :productId, :productName, :quantity, :price)
+            """;
+        
+        for (OrderItem item : order.getItems()) {
+            jdbcClient.sql(sql)
+                .param("id", UUID.randomUUID().toString())
+                .param("orderId", order.getId().value())
+                .param("productId", item.getProductId().value())
+                .param("productName", item.getProductName())
+                .param("quantity", item.getQuantity())
+                .param("price", item.getPrice().amount())
+                .update();
+        }
+    }
+    
+    private Order mapToOrder(List<OrderRow> rows) {
+        OrderRow first = rows.get(0);
+        
+        List<OrderItem> items = rows.stream()
+            .filter(row -> row.itemId() != null)
+            .map(row -> OrderItem.reconstruct(
+                new ProductId(row.productId()),
+                row.productName(),
+                row.quantity(),
+                new Money(row.price())
+            ))
+            .toList();
+        
+        return Order.reconstruct(
+            new OrderId(first.orderId()),
+            new CustomerId(first.customerId()),
+            items,
+            OrderStatus.valueOf(first.status()),
+            new Money(first.totalAmount()),
+            first.createdAt()
+        );
+    }
+}
+```
+
+**Spring Data JDBC 配置：**
+
+```java
+@Configuration
+@EnableJdbcRepositories(basePackages = "com.example.order.infrastructure.persistence")
+public class JdbcConfig extends AbstractJdbcConfiguration {
+    
+    // 自定义命名策略
+    @Bean
+    NamingStrategy namingStrategy() {
+        return new NamingStrategy() {
+            @Override
+            public String getColumnName(RelationalPersistentProperty property) {
+                // 驼峰转下划线
+                return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, 
+                    property.getName());
+            }
+        };
+    }
+    
+    // 自定义转换器
+    @Override
+    protected List<?> userConverters() {
+        return List.of(
+            new OrderStatusReadingConverter(),
+            new OrderStatusWritingConverter()
+        );
+    }
+}
+
+// 自定义转换器
+@ReadingConverter
+class OrderStatusReadingConverter implements Converter<String, OrderStatus> {
+    @Override
+    public OrderStatus convert(String source) {
+        return OrderStatus.valueOf(source);
+    }
+}
+
+@WritingConverter
+class OrderStatusWritingConverter implements Converter<OrderStatus, String> {
+    @Override
+    public String convert(OrderStatus source) {
+        return source.name();
+    }
+}
+```
+
+**Spring Data JDBC vs JPA 对比：**
+
+| 特性 | Spring Data JPA | Spring Data JDBC |
+|------|----------------|------------------|
+| 复杂度 | 高 | 低 |
+| 学习曲线 | 陡峭 | 平缓 |
+| 延迟加载 | 支持 | 不支持 |
+| 脏检查 | 自动 | 无 |
+| 缓存 | 一级/二级缓存 | 无 |
+| 关系映射 | 复杂 | 简单（聚合） |
+| SQL 控制 | 低 | 高 |
+| 性能 | 中等 | 高 |
+| 透明度 | 低（魔法多） | 高 |
+| DDD 友好 | 中等 | 高 |
+
+**Spring Data JDBC 的优势：**
+
+1. **简单透明**：没有延迟加载、脏检查等隐藏行为
+2. **性能好**：没有缓存和代理开销
+3. **DDD 友好**：聚合根概念天然契合
+4. **易于理解**：保存时完整更新聚合，删除时级联删除
+5. **无魔法**：行为可预测
+
+**Spring Data JDBC 的限制：**
+
+1. **不支持延迟加载**：总是立即加载整个聚合
+2. **关系映射简单**：主要支持聚合内的一对多
+3. **无缓存**：每次查询都访问数据库
+4. **无脏检查**：需要显式调用 save()
+
+**适用场景：**
+
+- ✅ DDD 项目（聚合根模式）
+- ✅ 需要简单透明的持久化
+- ✅ 不需要复杂的对象关系映射
+- ✅ 追求性能和可预测性
+- ❌ 需要延迟加载大对象图
+- ❌ 需要复杂的多对多关系
+- ❌ 需要二级缓存
+
+#### 使用 Spring JDBC（JdbcTemplate/JdbcClient）实现仓储
+
+如果你不需要 ORM 的任何功能，可以使用原生的 Spring JDBC：
 
 **pom.xml 依赖：**
 ```xml
@@ -1267,57 +1674,64 @@ public class JdbcConfig {
 
 **持久化方案对比：**
 
-| 特性 | JPA | MyBatis | Spring JDBC |
-|------|-----|---------|-------------|
-| 学习曲线 | 中等 | 中等 | 低 |
-| 代码量 | 少 | 中等 | 多 |
-| SQL 控制 | 低 | 高 | 高 |
-| 性能 | 中等 | 高 | 高 |
-| 复杂查询 | 困难 | 容易 | 容易 |
-| 对象映射 | 自动 | 半自动 | 手动 |
-| 适用场景 | 简单 CRUD | 复杂查询 | 轻量级项目 |
-| 事务管理 | 自动 | 自动 | 自动 |
-| 批量操作 | 支持 | 支持 | 优秀 |
+| 特性 | JPA | Spring Data JDBC | MyBatis | Spring JDBC |
+|------|-----|------------------|---------|-------------|
+| 学习曲线 | 陡峭 | 平缓 | 中等 | 低 |
+| 代码量 | 少 | 少 | 中等 | 多 |
+| SQL 控制 | 低 | 中等 | 高 | 高 |
+| 性能 | 中等 | 高 | 高 | 高 |
+| 复杂查询 | 困难 | 中等 | 容易 | 容易 |
+| 对象映射 | 自动 | 自动（简单） | 半自动 | 手动 |
+| DDD 友好 | 中等 | 高 | 中等 | 低 |
+| 延迟加载 | 支持 | 不支持 | 支持 | 不支持 |
+| 缓存 | 一级/二级 | 无 | 二级（可选） | 无 |
+| 透明度 | 低 | 高 | 高 | 高 |
+| 事务管理 | 自动 | 自动 | 自动 | 自动 |
+| 批量操作 | 支持 | 支持 | 优秀 | 优秀 |
+| 适用场景 | 复杂对象图 | DDD 聚合 | 复杂查询 | 轻量级项目 |
 
 **选择建议：**
 
-1. **JPA**：领域模型复杂，需要对象关系映射
-2. **MyBatis**：需要完全控制 SQL，复杂查询多
-3. **Spring JDBC**：简单项目，不需要 ORM 开销，追求性能
+1. **Spring Data JDBC**（推荐）：DDD 项目，需要简单透明的持久化
+2. **JPA**：复杂对象关系映射，需要延迟加载和缓存
+3. **MyBatis**：需要完全控制 SQL，复杂查询多
+4. **Spring JDBC**：极简项目，不需要任何 ORM 功能
 
 **混合使用策略：**
 
 ```java
-// 写操作：使用 JPA（利用对象映射）
+// 写操作：使用 Spring Data JDBC（简单透明）
 @Service
 @Transactional
 public class OrderCommandService {
-    private final OrderJpaRepository jpaRepository;
+    private final OrderJdbcRepository jdbcRepository;
     
     public OrderId createOrder(CreateOrderCommand command) {
         Order order = Order.create(command);
-        jpaRepository.save(order);
+        OrderEntity entity = mapper.toEntity(order);
+        jdbcRepository.save(entity);
         return order.getId();
     }
 }
 
-// 简单查询：使用 JPA
+// 简单查询：使用 Spring Data JDBC
 @Service
 @Transactional(readOnly = true)
 public class OrderQueryService {
-    private final OrderJpaRepository jpaRepository;
+    private final OrderJdbcRepository jdbcRepository;
     
     public Order getOrder(OrderId id) {
-        return jpaRepository.findById(id.value())
+        return jdbcRepository.findById(id.value())
+            .map(mapper::toDomain)
             .orElseThrow(() -> new OrderNotFoundException(id));
     }
 }
 
-// 复杂查询：使用 Spring JDBC
+// 复杂查询/报表：使用 JdbcClient
 @Service
 @Transactional(readOnly = true)
 public class OrderReportService {
-    private final JdbcTemplate jdbcTemplate;
+    private final JdbcClient jdbcClient;
     
     public List<OrderStatistics> getOrderStatistics(LocalDate from, LocalDate to) {
         String sql = """
@@ -1327,20 +1741,16 @@ public class OrderReportService {
                 SUM(o.total_amount) as total_revenue,
                 AVG(o.total_amount) as avg_order_value
             FROM orders o
-            WHERE o.created_at BETWEEN ? AND ?
+            WHERE o.created_at BETWEEN :from AND :to
             GROUP BY DATE(o.created_at)
             ORDER BY order_date
             """;
         
-        return jdbcTemplate.query(sql, 
-            (rs, rowNum) -> new OrderStatistics(
-                rs.getDate("order_date").toLocalDate(),
-                rs.getInt("order_count"),
-                rs.getBigDecimal("total_revenue"),
-                rs.getBigDecimal("avg_order_value")
-            ),
-            from, to
-        );
+        return jdbcClient.sql(sql)
+            .param("from", from)
+            .param("to", to)
+            .query(OrderStatistics.class)
+            .list();
     }
 }
 ```
