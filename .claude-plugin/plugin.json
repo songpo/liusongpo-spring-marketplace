@@ -5,8 +5,8 @@
   "author": {
     "name": "刘松坡"
   },
-  "homepage": "https://github.com/songpo/liusongpo-springboot-marketplace",
-  "repository": "https://github.com/songpo/liusongpo-springboot-marketplace",
+  "homepage": "https://github.com/songpo/liusongpo-spring-marketplace",
+  "repository": "https://github.com/songpo/liusongpo-spring-marketplace",
   "license": "MIT",
   "keywords": [
     "spring-boot",
