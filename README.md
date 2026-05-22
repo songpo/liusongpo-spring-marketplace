@@ -67,6 +67,18 @@ Spring Boot 缓存实践，包括：
 - 缓存预热和定时更新
 - 缓存监控
 
+### springboot-messaging-cn
+Spring Boot 消息队列实践，包括：
+- RabbitMQ 完整实践（队列、交换机、绑定）
+- 死信队列和延迟队列
+- Kafka 生产者和消费者
+- Spring Cloud Stream 统一抽象
+- 消息可靠性保证（生产者确认、消费者确认）
+- 消息幂等性和去重
+- 消息重试机制
+- 消息顺序性保证
+- 监控和告警
+
 ### springboot-ddd-architecture-cn
 从零开始创建完整的 Spring Boot DDD 架构，包括：
 - 完整的项目结构和模块划分
@@ -117,6 +129,7 @@ claude plugin install springboot-security-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ai-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-observability-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-cache-cn@liusongpo-springboot-marketplace
+claude plugin install springboot-messaging-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
@@ -151,6 +164,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 /springboot-ai-cn                # Spring AI 集成
 /springboot-observability-cn     # 可观测性（监控、日志、追踪）
 /springboot-cache-cn             # 缓存（Redis、Caffeine）
+/springboot-messaging-cn         # 消息队列（RabbitMQ、Kafka）
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
 /springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
