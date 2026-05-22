@@ -144,39 +144,14 @@ claude plugin marketplace add /path/to/liusongpo-spring-marketplace
 
 ### 安装技能
 
-**方式 1：一键安装所有技能（推荐）**
+**一键安装所有技能：**
 
 ```bash
-# 安装元插件，自动安装所有 Spring 技能
-claude plugin install sp-skills@liusongpo-spring-marketplace
+# 安装 sp-spring 插件（包含所有 11 个子技能）
+claude plugin install sp-spring@liusongpo-spring-marketplace
 ```
 
-**方式 2：按需安装单个技能**
-
-```bash
-# 项目初始化
-claude plugin install spring-initializr-cn@liusongpo-spring-marketplace
-
-# 项目规划
-claude plugin install spring-project-planner-cn@liusongpo-spring-marketplace
-
-# Spring 核心框架
-claude plugin install spring-framework-cn@liusongpo-spring-marketplace
-claude plugin install spring-boot-cn@liusongpo-spring-marketplace
-claude plugin install spring-data-cn@liusongpo-spring-marketplace
-claude plugin install spring-security-cn@liusongpo-spring-marketplace
-claude plugin install spring-ai-cn@liusongpo-spring-marketplace
-
-# 架构设计
-claude plugin install spring-architecture-cn@liusongpo-spring-marketplace
-
-# Spring Cloud 微服务
-claude plugin install spring-cloud-cn@liusongpo-spring-marketplace
-
-# 企业集成
-claude plugin install spring-integration-cn@liusongpo-spring-marketplace
-claude plugin install spring-batch-cn@liusongpo-spring-marketplace
-```
+安装后，所有子技能将自动可用。
 
 ## 使用
 
@@ -184,40 +159,51 @@ claude plugin install spring-batch-cn@liusongpo-spring-marketplace
 
 ```bash
 # 第 1 步：先规划（必须！）
-/spring-project-planner-cn
+/sp-spring:planner
+# 或
+/planner
 
 # 助手会通过系统化问题了解你的需求，然后推荐合适的技能
 # 例如：推荐使用模块化单体架构
 
 # 第 2 步：根据推荐使用相应技能
-/spring-architecture-cn          # 创建架构
-/spring-framework-cn             # Spring 核心功能
-/spring-boot-cn                  # Spring Boot 开发
+/sp-spring:architecture      # 创建架构
+/sp-spring:framework         # Spring 核心功能
+/sp-spring:boot              # Spring Boot 开发
 ```
 
 ### 📚 所有可用技能
 
 安装后，在 Claude Code 中使用 `/skills` 命令查看可用技能，或直接调用：
 
+**方式 1：带命名空间（推荐）**
 ```
-/spring-project-planner-cn       # 🎯 项目规划（强烈推荐首先使用）
-/spring-initializr-cn            # 快速生成项目脚手架
-/spring-framework-cn             # Spring Framework 核心
-/spring-boot-cn                  # Spring Boot 开发
-/spring-data-cn                  # Spring Data 数据访问
-/spring-security-cn              # Spring Security 安全
-/spring-ai-cn                    # Spring AI 集成
-/spring-architecture-cn          # 架构设计（DDD、CQRS、模块化单体）
-/spring-cloud-cn                 # Spring Cloud 微服务架构
-/spring-integration-cn           # 企业集成模式
-/spring-batch-cn                 # 批处理
+/sp-spring:planner          # 🎯 项目规划（强烈推荐首先使用）
+/sp-spring:initializr       # 快速生成项目脚手架
+/sp-spring:framework        # Spring Framework 核心
+/sp-spring:boot             # Spring Boot 开发
+/sp-spring:data             # Spring Data 数据访问
+/sp-spring:security         # Spring Security 安全
+/sp-spring:ai               # Spring AI 集成
+/sp-spring:architecture     # 架构设计（DDD、CQRS、模块化单体）
+/sp-spring:cloud            # Spring Cloud 微服务架构
+/sp-spring:integration      # 企业集成模式
+/sp-spring:batch            # 批处理
+```
+
+**方式 2：不带命名空间**
+```
+/planner                    # 项目规划
+/boot                       # Spring Boot 开发
+/cloud                      # Spring Cloud 微服务
+/architecture               # 架构设计
 ```
 
 ### 完整的项目开发流程
 
 #### 第 1 步：项目规划 ⭐
 
-**使用技能：** `/spring-project-planner-cn`
+**使用技能：** `/sp-spring:planner` 或 `/planner`
 
 **目标：** 通过系统化沟通，全面了解需求并生成设计文档
 
@@ -232,7 +218,7 @@ claude plugin install spring-batch-cn@liusongpo-spring-marketplace
 
 **示例：**
 ```
-用户：/spring-project-planner-cn
+用户：/sp-spring:planner
 助手：你好！让我们一起规划你的项目。请描述一下项目的业务目标？
 用户：我想做一个电商平台...
 助手：[开始系统化沟通，涵盖功能、架构、安全、测试、运维等方面]
@@ -244,19 +230,19 @@ claude plugin install spring-batch-cn@liusongpo-spring-marketplace
 
 **方案 A：DDD 多模块架构（大型项目）**
 
-1. 使用 `/spring-architecture-cn` 创建分层架构
-2. 使用 `/spring-architecture-cn` 设计领域模型
+1. 使用 `/sp-spring:architecture` 创建分层架构
+2. 使用 `/sp-spring:architecture` 设计领域模型
 3. 如需读写分离，使用 CQRS 模式
 
 **方案 B：模块化单体架构（中小型项目，推荐）**
 
-1. 使用 `/spring-architecture-cn` 创建模块化架构
+1. 使用 `/sp-spring:architecture` 创建模块化架构
 2. 在每个模块内设计领域模型
 3. 使用 Modulith 的事件驱动通信
 
 #### 第 3 步：测试和质量保证
 
-**使用技能：** `/spring-framework-cn` 和 `/spring-boot-cn`
+**使用技能：** `/sp-spring:framework` 和 `/sp-spring:boot`
 
 - 编写单元测试
 - 编写集成测试
@@ -264,7 +250,7 @@ claude plugin install spring-batch-cn@liusongpo-spring-marketplace
 
 #### 第 4 步：进度跟踪
 
-回到 `/spring-project-planner-cn`，使用检查清单跟踪进度：
+回到 `/sp-spring:planner`，使用检查清单跟踪进度：
 - 每日检查清单
 - 迭代回顾
 - 里程碑检查
@@ -272,17 +258,17 @@ claude plugin install spring-batch-cn@liusongpo-spring-marketplace
 ### 推荐使用顺序（新项目）
 
 ```
-1. /spring-project-planner-cn         ← 开始：全面规划
+1. /sp-spring:planner              ← 开始：全面规划
    ↓
-2. /spring-architecture-cn            ← 创建架构
+2. /sp-spring:architecture         ← 创建架构
    ↓
-3. /spring-framework-cn               ← Spring 核心功能
+3. /sp-spring:framework            ← Spring 核心功能
    ↓
-4. /spring-boot-cn                    ← Spring Boot 开发
+4. /sp-spring:boot                 ← Spring Boot 开发
    ↓
-5. /spring-data-cn                    ← 数据访问
+5. /sp-spring:data                 ← 数据访问
    ↓
-6. /spring-project-planner-cn         ← 回到：跟踪进度
+6. /sp-spring:planner              ← 回到：跟踪进度
 ```
 
 ### Modulith + DDD 结合的优势

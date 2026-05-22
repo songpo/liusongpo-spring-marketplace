@@ -1,0 +1,22 @@
+{
+  "name": "sp-spring",
+  "version": "1.0.0",
+  "description": "Spring 生态系统技能集 - Spring Framework、Spring Boot、Spring Cloud 等全面技能",
+  "author": {
+    "name": "刘松坡",
+    "email": "liusongpo@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "spring",
+    "spring-boot",
+    "spring-cloud",
+    "spring-framework",
+    "spring-data",
+    "spring-security",
+    "microservices",
+    "architecture",
+    "ddd",
+    "java"
+  ]
+}

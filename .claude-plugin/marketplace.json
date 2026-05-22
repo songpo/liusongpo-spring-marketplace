@@ -1,6 +1,5 @@
 {
   "name": "liusongpo-spring-marketplace",
-  "namespace": "sp-spring",
   "description": "Spring 生态系统技能市场 - Spring Framework、Spring Boot、Spring Cloud 等全面技能",
   "owner": {
     "name": "刘松坡",
@@ -8,109 +7,10 @@
   },
   "plugins": [
     {
-      "name": "sp-skills",
-      "description": "安装所有 Spring 技能的元插件包",
+      "name": "sp-spring",
+      "description": "Spring 生态系统技能集 - 包含 Framework、Boot、Cloud、Data、Security、AI、Architecture 等 11 个子技能",
       "version": "1.0.0",
-      "source": "./skills/sp-skills",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-project-planner-cn",
-      "description": "Spring 项目规划助手，全面沟通需求并生成架构设计和实施计划，支持 Spring Boot、Spring Cloud、Spring Batch 等",
-      "version": "1.0.0",
-      "source": "./skills/spring-project-planner-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-initializr-cn",
-      "description": "使用 Spring Initializr API 自动生成 Spring Boot 项目脚手架,与用户沟通需求后下载并解压项目模板",
-      "version": "1.0.0",
-      "source": "./skills/spring-initializr-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-framework-cn",
-      "description": "Spring Framework 核心框架实践，包括 IoC/DI、AOP、事件机制、资源管理和数据绑定",
-      "version": "1.0.0",
-      "source": "./skills/spring-framework-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-boot-cn",
-      "description": "Spring Boot 核心开发实践，包括自动配置、Starter、配置管理、Actuator 和部署",
-      "version": "1.0.0",
-      "source": "./skills/spring-boot-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-data-cn",
-      "description": "Spring Data 数据访问实践，包括 JPA、JDBC、Redis、MongoDB 和查询方法",
-      "version": "1.0.0",
-      "source": "./skills/spring-data-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-security-cn",
-      "description": "Spring Security 安全框架实践，包括认证、授权、JWT、OAuth2 和安全最佳实践",
-      "version": "1.0.0",
-      "source": "./skills/spring-security-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-ai-cn",
-      "description": "Spring AI 集成实践，包括 LLM 对接、RAG、向量数据库、Prompt 工程和 AI 应用开发",
-      "version": "1.0.0",
-      "source": "./skills/spring-ai-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-architecture-cn",
-      "description": "Spring 应用架构设计实践，包括 DDD、CQRS、模块化单体和分层架构",
-      "version": "1.0.0",
-      "source": "./skills/spring-architecture-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-cloud-cn",
-      "description": "Spring Cloud 微服务架构实践，包括微服务概念、架构模式和 Spring Cloud 生态系统",
-      "version": "1.0.0",
-      "source": "./skills/spring-cloud-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-integration-cn",
-      "description": "在 Spring Boot 应用中使用 Spring Integration 实现企业集成模式(EIP)、消息通道、端点、转换器、路由、聚合时使用",
-      "version": "1.0.0",
-      "source": "./skills/spring-integration-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "spring-batch-cn",
-      "description": "Spring Batch 批处理实践，包括 Job、Step、ItemReader/Writer/Processor、分块处理和任务调度",
-      "version": "1.0.0",
-      "source": "./skills/spring-batch-cn",
+      "source": "./skills/sp-spring",
       "author": {
         "name": "刘松坡"
       }
