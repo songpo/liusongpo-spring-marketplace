@@ -7,19 +7,10 @@
   },
   "plugins": [
     {
-      "name": "springboot-ddd-cn",
-      "description": "在 Spring Boot 应用中实践领域驱动设计（DDD）",
+      "name": "liusongpo-springboot-skills",
+      "description": "Spring Boot skills marketplace - comprehensive skills for Spring Boot development",
       "version": "1.0.0",
-      "source": "./springboot-ddd-cn",
-      "author": {
-        "name": "刘松坡"
-      }
-    },
-    {
-      "name": "springboot-testing-cn",
-      "description": "Spring Boot 应用测试策略与实践",
-      "version": "1.0.0",
-      "source": "./springboot-testing-cn",
+      "source": "./",
       "author": {
         "name": "刘松坡"
       }

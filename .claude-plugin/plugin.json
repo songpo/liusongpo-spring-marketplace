@@ -15,5 +15,6 @@
     "testing",
     "skills",
     "best-practices"
-  ]
+  ],
+  "skillsDir": "skills"
 }
