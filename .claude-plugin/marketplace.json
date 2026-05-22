@@ -16,6 +16,15 @@
       }
     },
     {
+      "name": "springboot-security-cn",
+      "description": "Spring Security 安全框架实践，包括认证、授权、JWT、OAuth2 和安全最佳实践",
+      "version": "1.0.0",
+      "source": "./skills/springboot-security-cn",
+      "author": {
+        "name": "刘松坡"
+      }
+    },
+    {
       "name": "springboot-ddd-cn",
       "description": "在 Spring Boot 应用中实践领域驱动设计（DDD）时使用",
       "version": "1.0.0",

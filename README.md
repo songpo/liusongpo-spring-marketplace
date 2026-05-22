@@ -26,6 +26,15 @@
 - 自动生成架构设计文档和实施计划
 - 指导你使用其他技能完成实施
 
+### springboot-security-cn
+Spring Security 安全框架实践，包括：
+- 用户认证和授权
+- JWT 令牌认证实现
+- OAuth2/OIDC 第三方登录
+- 基于角色的权限控制（RBAC）
+- 方法级权限控制
+- 安全最佳实践（密码策略、防暴力破解、审计日志）
+
 ### springboot-ddd-architecture-cn
 从零开始创建完整的 Spring Boot DDD 架构，包括：
 - 完整的项目结构和模块划分
@@ -72,6 +81,7 @@ claude plugin marketplace add https://github.com/songpo/liusongpo-springboot-mar
 ```bash
 # 单独安装技能
 claude plugin install springboot-project-planner-cn@liusongpo-springboot-marketplace
+claude plugin install springboot-security-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-architecture-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-modulith-cn@liusongpo-springboot-marketplace
 claude plugin install springboot-ddd-cn@liusongpo-springboot-marketplace
@@ -102,6 +112,7 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 ```
 /springboot-project-planner-cn   # 🎯 项目规划（强烈推荐首先使用）
+/springboot-security-cn          # Spring Security 安全
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
 /springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
