@@ -19,6 +19,11 @@ description: 在 Spring Boot 应用中使用 Spring Cloud Circuit Breaker 实现
 
 ## Maven 依赖
 
+**Spring Initializr 依赖选择:**
+- Resilience4J: `cloud-resilience4j`
+- Spring Boot Actuator: `actuator`
+- Micrometer Prometheus: `prometheus` (可选,用于监控)
+
 ```xml
 <dependencies>
     <!-- Spring Cloud Circuit Breaker -->

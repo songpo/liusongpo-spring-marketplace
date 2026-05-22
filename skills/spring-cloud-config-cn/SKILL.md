@@ -18,6 +18,12 @@ description: 在 Spring Boot 应用中使用 Spring Cloud Config 实现集中式
 
 ## Maven 依赖
 
+**Spring Initializr 依赖选择:**
+- Config Server: `cloud-config-server`
+- Config Client: `cloud-config-client`
+- Spring Boot Actuator: `actuator`
+- Spring Security: `security` (可选)
+
 ### 配置服务器
 
 ```xml
