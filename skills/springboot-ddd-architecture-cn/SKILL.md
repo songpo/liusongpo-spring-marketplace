@@ -520,6 +520,382 @@ class OrderMapper {
 }
 ```
 
+#### 使用 MyBatis 实现仓储（替代方案）
+
+如果你更喜欢使用 MyBatis 而不是 JPA，可以这样实现：
+
+**pom.xml 依赖：**
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.example</groupId>
+        <artifactId>order-domain</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>3.0.3</version>
+    </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+</dependencies>
+```
+
+**MyBatis 仓储实现：**
+```java
+// 仓储实现
+package com.example.order.infrastructure.persistence.mybatis;
+
+@Repository
+public class OrderMyBatisRepositoryImpl implements OrderRepository {
+    private final OrderMapper orderMapper;
+    private final OrderItemMapper orderItemMapper;
+    private final OrderDomainMapper domainMapper;
+    
+    public OrderMyBatisRepositoryImpl(
+        OrderMapper orderMapper,
+        OrderItemMapper orderItemMapper,
+        OrderDomainMapper domainMapper
+    ) {
+        this.orderMapper = orderMapper;
+        this.orderItemMapper = orderItemMapper;
+        this.domainMapper = domainMapper;
+    }
+    
+    @Override
+    @Transactional
+    public Order save(Order order) {
+        OrderPO orderPO = domainMapper.toPO(order);
+        
+        if (orderMapper.existsById(orderPO.getId())) {
+            // 更新
+            orderMapper.update(orderPO);
+            // 删除旧的订单项
+            orderItemMapper.deleteByOrderId(orderPO.getId());
+        } else {
+            // 插入
+            orderMapper.insert(orderPO);
+        }
+        
+        // 插入订单项
+        for (OrderItemPO item : orderPO.getItems()) {
+            item.setOrderId(orderPO.getId());
+            orderItemMapper.insert(item);
+        }
+        
+        return order;
+    }
+    
+    @Override
+    public Optional<Order> findById(OrderId id) {
+        OrderPO orderPO = orderMapper.selectById(id.value());
+        if (orderPO == null) {
+            return Optional.empty();
+        }
+        
+        List<OrderItemPO> items = orderItemMapper.selectByOrderId(id.value());
+        orderPO.setItems(items);
+        
+        return Optional.of(domainMapper.toDomain(orderPO));
+    }
+    
+    @Override
+    public List<Order> findByCustomerId(CustomerId customerId) {
+        List<OrderPO> orderPOs = orderMapper.selectByCustomerId(customerId.value());
+        
+        return orderPOs.stream()
+            .map(po -> {
+                List<OrderItemPO> items = orderItemMapper.selectByOrderId(po.getId());
+                po.setItems(items);
+                return domainMapper.toDomain(po);
+            })
+            .toList();
+    }
+    
+    @Override
+    @Transactional
+    public void delete(OrderId id) {
+        orderItemMapper.deleteByOrderId(id.value());
+        orderMapper.deleteById(id.value());
+    }
+}
+
+// MyBatis Mapper 接口
+@Mapper
+public interface OrderMapper {
+    @Insert("""
+        INSERT INTO orders (id, customer_id, status, total_amount, created_at)
+        VALUES (#{id}, #{customerId}, #{status}, #{totalAmount}, #{createdAt})
+        """)
+    void insert(OrderPO order);
+    
+    @Update("""
+        UPDATE orders 
+        SET customer_id = #{customerId}, 
+            status = #{status}, 
+            total_amount = #{totalAmount}
+        WHERE id = #{id}
+        """)
+    void update(OrderPO order);
+    
+    @Select("SELECT * FROM orders WHERE id = #{id}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "customerId", column = "customer_id"),
+        @Result(property = "status", column = "status"),
+        @Result(property = "totalAmount", column = "total_amount"),
+        @Result(property = "createdAt", column = "created_at")
+    })
+    OrderPO selectById(String id);
+    
+    @Select("SELECT * FROM orders WHERE customer_id = #{customerId}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "customerId", column = "customer_id"),
+        @Result(property = "status", column = "status"),
+        @Result(property = "totalAmount", column = "total_amount"),
+        @Result(property = "createdAt", column = "created_at")
+    })
+    List<OrderPO> selectByCustomerId(String customerId);
+    
+    @Select("SELECT COUNT(*) FROM orders WHERE id = #{id}")
+    boolean existsById(String id);
+    
+    @Delete("DELETE FROM orders WHERE id = #{id}")
+    void deleteById(String id);
+}
+
+@Mapper
+public interface OrderItemMapper {
+    @Insert("""
+        INSERT INTO order_items (id, order_id, product_id, product_name, quantity, price)
+        VALUES (#{id}, #{orderId}, #{productId}, #{productName}, #{quantity}, #{price})
+        """)
+    void insert(OrderItemPO item);
+    
+    @Select("SELECT * FROM order_items WHERE order_id = #{orderId}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "orderId", column = "order_id"),
+        @Result(property = "productId", column = "product_id"),
+        @Result(property = "productName", column = "product_name"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price")
+    })
+    List<OrderItemPO> selectByOrderId(String orderId);
+    
+    @Delete("DELETE FROM order_items WHERE order_id = #{orderId}")
+    void deleteByOrderId(String orderId);
+}
+
+// 持久化对象（PO）
+public class OrderPO {
+    private String id;
+    private String customerId;
+    private String status;
+    private BigDecimal totalAmount;
+    private LocalDateTime createdAt;
+    private List<OrderItemPO> items;
+    
+    // Getter/Setter
+}
+
+public class OrderItemPO {
+    private String id;
+    private String orderId;
+    private String productId;
+    private String productName;
+    private Integer quantity;
+    private BigDecimal price;
+    
+    // Getter/Setter
+}
+
+// 领域对象映射器
+@Component
+public class OrderDomainMapper {
+    public OrderPO toPO(Order order) {
+        OrderPO po = new OrderPO();
+        po.setId(order.getId().value());
+        po.setCustomerId(order.getCustomerId().value());
+        po.setStatus(order.getStatus().name());
+        po.setTotalAmount(order.getTotalAmount().amount());
+        po.setCreatedAt(order.getCreatedAt());
+        
+        List<OrderItemPO> itemPOs = order.getItems().stream()
+            .map(this::toItemPO)
+            .toList();
+        po.setItems(itemPOs);
+        
+        return po;
+    }
+    
+    public Order toDomain(OrderPO po) {
+        // 重建领域对象
+        List<OrderItem> items = po.getItems().stream()
+            .map(this::toItemDomain)
+            .toList();
+        
+        // 使用反射或特殊构造器重建 Order
+        return Order.reconstruct(
+            new OrderId(po.getId()),
+            new CustomerId(po.getCustomerId()),
+            items,
+            OrderStatus.valueOf(po.getStatus()),
+            new Money(po.getTotalAmount()),
+            po.getCreatedAt()
+        );
+    }
+    
+    private OrderItemPO toItemPO(OrderItem item) {
+        OrderItemPO po = new OrderItemPO();
+        po.setId(UUID.randomUUID().toString());
+        po.setProductId(item.getProductId().value());
+        po.setProductName(item.getProductName());
+        po.setQuantity(item.getQuantity());
+        po.setPrice(item.getPrice().amount());
+        return po;
+    }
+    
+    private OrderItem toItemDomain(OrderItemPO po) {
+        return OrderItem.reconstruct(
+            new ProductId(po.getProductId()),
+            po.getProductName(),
+            po.getQuantity(),
+            new Money(po.getPrice())
+        );
+    }
+}
+```
+
+**使用 XML 配置（推荐用于复杂查询）：**
+
+```xml
+<!-- resources/mapper/OrderMapper.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.order.infrastructure.persistence.mybatis.OrderMapper">
+    
+    <resultMap id="OrderResultMap" type="com.example.order.infrastructure.persistence.mybatis.OrderPO">
+        <id property="id" column="id"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="status" column="status"/>
+        <result property="totalAmount" column="total_amount"/>
+        <result property="createdAt" column="created_at"/>
+        <collection property="items" ofType="com.example.order.infrastructure.persistence.mybatis.OrderItemPO">
+            <id property="id" column="item_id"/>
+            <result property="orderId" column="order_id"/>
+            <result property="productId" column="product_id"/>
+            <result property="productName" column="product_name"/>
+            <result property="quantity" column="quantity"/>
+            <result property="price" column="price"/>
+        </collection>
+    </resultMap>
+    
+    <select id="selectByIdWithItems" resultMap="OrderResultMap">
+        SELECT 
+            o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+            oi.id as item_id, oi.order_id, oi.product_id, 
+            oi.product_name, oi.quantity, oi.price
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.id = #{id}
+    </select>
+    
+    <select id="selectByCustomerIdWithItems" resultMap="OrderResultMap">
+        SELECT 
+            o.id, o.customer_id, o.status, o.total_amount, o.created_at,
+            oi.id as item_id, oi.order_id, oi.product_id, 
+            oi.product_name, oi.quantity, oi.price
+        FROM orders o
+        LEFT JOIN order_items oi ON o.id = oi.order_id
+        WHERE o.customer_id = #{customerId}
+        ORDER BY o.created_at DESC
+    </select>
+    
+</mapper>
+```
+
+**MyBatis 配置：**
+
+```java
+// application.yml
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.example.order.infrastructure.persistence.mybatis
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+// 或者 Java 配置
+@Configuration
+@MapperScan("com.example.order.infrastructure.persistence.mybatis")
+public class MyBatisConfig {
+    
+    @Bean
+    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+        sessionFactory.setMapperLocations(
+            new PathMatchingResourcePatternResolver()
+                .getResources("classpath:mapper/*.xml")
+        );
+        
+        org.apache.ibatis.session.Configuration configuration = 
+            new org.apache.ibatis.session.Configuration();
+        configuration.setMapUnderscoreToCamelCase(true);
+        sessionFactory.setConfiguration(configuration);
+        
+        return sessionFactory.getObject();
+    }
+}
+```
+
+**MyBatis vs JPA 选择建议：**
+
+| 场景 | 推荐 |
+|------|------|
+| 复杂查询、多表关联 | MyBatis |
+| 简单 CRUD | JPA |
+| 需要完全控制 SQL | MyBatis |
+| 快速开发原型 | JPA |
+| 性能优化要求高 | MyBatis |
+| 数据库无关性 | JPA |
+| 动态 SQL | MyBatis |
+| 领域模型复杂 | JPA + 映射器 |
+
+**混合使用：**
+
+可以在同一个项目中同时使用 JPA 和 MyBatis：
+- 写操作（命令）：使用 JPA，利用其事务管理和对象映射
+- 读操作（查询）：使用 MyBatis，优化复杂查询性能
+
+```java
+@Service
+@Transactional
+public class OrderCommandService {
+    private final OrderJpaRepository jpaRepository; // 写操作用 JPA
+    
+    public OrderId createOrder(CreateOrderCommand command) {
+        // 使用 JPA 保存
+    }
+}
+
+@Service
+@Transactional(readOnly = true)
+public class OrderQueryService {
+    private final OrderMapper mybatisMapper; // 读操作用 MyBatis
+    
+    public List<OrderDto> searchOrders(OrderSearchCriteria criteria) {
+        // 使用 MyBatis 复杂查询
+    }
+}
+```
+
 ### 4. 接口层（Interfaces Layer）
 
 **职责：** 暴露应用功能
