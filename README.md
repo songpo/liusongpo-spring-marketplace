@@ -2,20 +2,35 @@
 
 这是一个专注于 Spring Boot 开发的技能市场，包含了 Spring Boot 开发中常用的最佳实践和模式。
 
+## ⚠️ 重要提示
+
+**在开始使用其他技能之前，强烈建议先使用 `/springboot-project-planner-cn` 进行项目规划。**
+
+很多项目失败不是因为技术问题，而是因为需求不清晰、架构选择不当、技术选型失误。
+
+**先花 30 分钟规划，可以节省 30 天的返工时间。**
+
 ## 包含的技能
 
-### springboot-project-planner-cn ⭐ 推荐首先使用
-Spring Boot 项目规划助手，包括：
-- 全面的需求沟通（功能、架构、安全、测试、运维）
-- 自动生成架构设计文档
-- 生成详细的实施计划和检查清单
-- 进度跟踪和迭代回顾
+### 🎯 springboot-project-planner-cn（强烈推荐首先使用）
+
+**为什么要先规划？**
+- ❌ 需求不清晰 → 做到一半发现方向错了
+- ❌ 架构选择不当 → 后期难以扩展
+- ❌ 技术选型失误 → 团队不熟悉导致进度延误
+- ✅ 先规划再编码 → 避免返工，提高效率
+
+**这个技能会帮你：**
+- 通过系统化问题梳理需求（功能、架构、安全、测试、运维）
+- 推荐合适的架构方案和技术选型
+- 自动生成架构设计文档和实施计划
+- 指导你使用其他技能完成实施
 
 ### springboot-ddd-architecture-cn
 从零开始创建完整的 Spring Boot DDD 架构，包括：
 - 完整的项目结构和模块划分
 - 分层架构详解（领域层、应用层、基础设施层、接口层）
-- Maven 多模块配置
+- 4 种持久化方案（JPA、Spring Data JDBC、MyBatis、Spring JDBC）
 - 完整的电商订单系统实战案例
 
 ### springboot-modulith-cn
@@ -66,10 +81,27 @@ claude plugin install springboot-testing-cn@liusongpo-springboot-marketplace
 
 ## 使用
 
+### 🚀 快速开始（推荐流程）
+
+```bash
+# 第 1 步：先规划（必须！）
+/springboot-project-planner-cn
+
+# 助手会通过系统化问题了解你的需求，然后推荐合适的技能
+# 例如：推荐使用模块化单体架构
+
+# 第 2 步：根据推荐使用相应技能
+/springboot-modulith-cn          # 创建模块化架构
+/springboot-ddd-cn               # 设计领域模型
+/springboot-testing-cn           # 编写测试
+```
+
+### 📚 所有可用技能
+
 安装后，在 Claude Code 中使用 `/skills` 命令查看可用技能，或直接调用：
 
 ```
-/springboot-project-planner-cn   # 项目规划（推荐首先使用）
+/springboot-project-planner-cn   # 🎯 项目规划（强烈推荐首先使用）
 /springboot-ddd-architecture-cn  # 创建完整的 DDD 架构
 /springboot-modulith-cn          # 模块化单体架构
 /springboot-ddd-cn               # DDD 核心概念
